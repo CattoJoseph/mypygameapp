@@ -2,6 +2,15 @@
 import pygame as pg
 import random
 
+from os import path
+img_dir = path.join(path.dirname(__file__),'img') #img is the folder where the graphics are
+#load all game graphics
+#convert() methods will draw the image in memory before it is displayed which is
+# much faster than drawing it in real time i.e. pixel by pixel
+
+background = pg.image.load(path.join(img_dir,"RMBackground")).convert()
+#to place the image somewhere, make a rect for it
+background_rect = background.get_rect()
 #parameters
 WIDTH,HEIGHT,FPS = (480, 600,60)
 #define colours
@@ -18,8 +27,8 @@ class Player(pg.sprite.Sprite):
     def __init__(self):
         #constructor
         pg.sprite.Sprite.__init__(self) #inheritance
-        self.image = pg.Surface((50,40)) #surface gives you something to draw on
-        self.image.fill(GREEN)
+        self.image = pg.transform.scale(player_img,(50,38)) #surface gives you something to draw on
+        self.image.set_colorkey(BLACK)
         #useful for moving, size, position and collision
         self.rect = self.image.get_rect() #looks at the image and gets its rect
         self.rect.centerx = (WIDTH/2) #places image in the centre
@@ -107,6 +116,10 @@ class Bullet(pg.sprite.Sprite):
         #kill it if it moves off the top of the screen
         if self.rect.bottom < 0:
             self.kill()  
+#Load other image
+player_img = pg.image.load(path.join(img_dir, "Rick player")).convert()
+bullet_img = pg.image.load(path.join(img_dir, "Morty bullet")).convert()
+mob_img = pg.image.load(path.join(img_dir, "MrNimbus enemy")).convert()
 
 #create a sprite group
 all_sprites = pg.sprite.Group()
@@ -157,7 +170,10 @@ while running:
     if hits:
         running = False
     #draw/render
-    screen.fill(BLACK)
+    screen.fill(BLACK) #keep this just in case the background image does not fit the entire screen
+    #draw background on the screen
+    #blit means copy the pixels of one thing on to another
+    screen.blit(background,background_rect)
     all_sprites.draw(screen)
     #always do this after drawing everything
     pg.display.flip()

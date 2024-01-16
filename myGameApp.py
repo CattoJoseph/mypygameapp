@@ -8,11 +8,8 @@ img_dir = path.join(path.dirname(__file__),'img') #img is the folder where the g
 #convert() methods will draw the image in memory before it is displayed which is
 # much faster than drawing it in real time i.e. pixel by pixel
 
-background = pg.image.load(path.join(img_dir,"RMBackground")).convert()
-#to place the image somewhere, make a rect for it
-background_rect = background.get_rect()
 #parameters
-WIDTH,HEIGHT,FPS = (480, 600,60)
+WIDTH,HEIGHT,FPS = (600, 600,60)
 #define colours
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -66,8 +63,8 @@ class Mob(pg.sprite.Sprite):
     #enemy mobile object which inherits from the sprite
     def __init__(self):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.Surface((30,40))
-        self.image.fill(RED)
+        self.image = pg.transform.scale(mob_img,(30,30))
+        self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
 
         #make the enemy spawn off top of the screen to appear off the screen and then start dropping down
@@ -99,12 +96,19 @@ screen = pg.display.set_mode((WIDTH,HEIGHT))
 pg.display.set_caption("My Game")
 clock = pg.time.Clock()#handles the speed
 
+background = pg.image.load(path.join(img_dir,"RMBackground.jpg")).convert()
+#to place the image somewhere, make a rect for it
+background_rect = background.get_rect()
+mob_img = pg.image.load(path.join(img_dir, "MrNimbusEnemy.png")).convert()
+player_img = pg.image.load(path.join(img_dir, "Rick player.jpg")).convert()
+bullet_img = pg.image.load(path.join(img_dir, "Morty bullet.jpg")).convert()
+
 class Bullet(pg.sprite.Sprite):
     def __init__(self,x,y):
         # x and y are respawn positions based on the player's position
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.Surface((10,20))
-        self.image.fill(YELLOW)
+        self.image = pg.transform.scale(bullet_img,(30,30))
+        self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         #set re-spawn position to right infront of the player
         self.rect.bottom = y
@@ -117,9 +121,6 @@ class Bullet(pg.sprite.Sprite):
         if self.rect.bottom < 0:
             self.kill()  
 #Load other image
-player_img = pg.image.load(path.join(img_dir, "Rick player")).convert()
-bullet_img = pg.image.load(path.join(img_dir, "Morty bullet")).convert()
-mob_img = pg.image.load(path.join(img_dir, "MrNimbus enemy")).convert()
 
 #create a sprite group
 all_sprites = pg.sprite.Group()

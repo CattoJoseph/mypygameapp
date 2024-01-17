@@ -6,10 +6,10 @@ from os import path
 img_dir = path.join(path.dirname(__file__),'img') #img is the folder where the graphics are
 #load all game graphics
 #convert() methods will draw the image in memory before it is displayed which is
-# much faster than drawing it in real time i.e. pixel by pixel
+# much faster than drawing it in real time i.e. pixel by pixel  
 
 #parameters
-WIDTH,HEIGHT,FPS = (600, 600,60)
+WIDTH,HEIGHT,FPS = (1000,600,60)
 #define colours
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -24,10 +24,15 @@ class Player(pg.sprite.Sprite):
     def __init__(self):
         #constructor
         pg.sprite.Sprite.__init__(self) #inheritance
-        self.image = pg.transform.scale(player_img,(50,38)) #surface gives you something to draw on
+        self.image = pg.transform.scale(player_img,(64,53)) #surface gives you something to draw on
         self.image.set_colorkey(BLACK)
         #useful for moving, size, position and collision
         self.rect = self.image.get_rect() #looks at the image and gets its rect
+        self.radius = int(self.rect.width /2)  # assumption made since width of sprite is 64 - radius is 32
+        #we will draw a circle so we see how big it is so we can adjust the radius
+        #we will draw it in red at the center of the rectangle and using the radius above
+        #pg.draw.circle(self.image,RED,self.rect.center,self.radius)
+        
         self.rect.centerx = (WIDTH/2) #places image in the centre
         self.rect.bottom = HEIGHT-10
         #it needs to move side to side so we need speed
@@ -63,9 +68,12 @@ class Mob(pg.sprite.Sprite):
     #enemy mobile object which inherits from the sprite
     def __init__(self):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.transform.scale(mob_img,(30,30))
+        self.image = pg.transform.scale(mob_img,(60,60))
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
+
+        self.radius = int(self.rect.width /2)
+        #pg.draw.circle(self.image,RED,self.rect.center,self.radius)
 
         #make the enemy spawn off top of the screen to appear off the screen and then start dropping down
         self.rect.x = random.randrange(0, WIDTH - self.rect.width) #appears within the limits of the screen
@@ -100,14 +108,14 @@ background = pg.image.load(path.join(img_dir,"RMBackground.jpg")).convert()
 #to place the image somewhere, make a rect for it
 background_rect = background.get_rect()
 mob_img = pg.image.load(path.join(img_dir, "MrNimbusEnemy.png")).convert()
-player_img = pg.image.load(path.join(img_dir, "Rick player.jpg")).convert()
+player_img = pg.image.load(path.join(img_dir, "Rick2 player.jpg")).convert()
 bullet_img = pg.image.load(path.join(img_dir, "Morty bullet.jpg")).convert()
 
 class Bullet(pg.sprite.Sprite):
     def __init__(self,x,y):
         # x and y are respawn positions based on the player's position
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.transform.scale(bullet_img,(30,30))
+        self.image = pg.transform.scale(bullet_img,(30,50))
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         #set re-spawn position to right infront of the player
@@ -165,7 +173,7 @@ while running:
         all_sprites.add(m)
         mobs.add(m)
     #Check to see if a mob hit the player
-    hits = pg.sprite.spritecollide(player,mobs,False) # parameters are object to check against and group against
+    hits = pg.sprite.spritecollide(player,mobs,False, pg.sprite.collide_circle) # parameters are object to check against and group against
                                     #FALSE indicates whether hit item in group should be deleted or not
     
     if hits:

@@ -104,6 +104,17 @@ screen = pg.display.set_mode((WIDTH,HEIGHT))
 pg.display.set_caption("My Game")
 clock = pg.time.Clock()#handles the speed
 
+#search for a matching font
+font_name = pg.font.match_font('aharoni')
+
+def draw_text(surf,text,size, x,y):
+    #create a font object
+    font = pg.font.Font(font_name,size) #this will create text
+    text_surface = font.render(text,True,RED) #True is for anti aliasing
+    text_rect = text_surface.get_rect() #get the rectangle for the text
+    text_rect.midtop = (x,y) #put x,y at the midtop of the rectangle
+    surf.blit(text_surface, text_rect)
+
 background = pg.image.load(path.join(img_dir,"RMBackground.jpg")).convert()
 #to place the image somewhere, make a rect for it
 background_rect = background.get_rect()
@@ -144,6 +155,7 @@ for i in range(8):
     mobs.add(m)
     
 all_sprites.add(player)
+score = 0
 #Game loop
 #You need a while loop and a way to stop it - the variable "running" is used here
 running = True
@@ -169,6 +181,7 @@ while running:
         #notice that this will kill the mobs so there needs to be a way of respawning them if they get killed
     hits = pg.sprite.groupcollide(mobs,bullets,True,True)
     for hit in hits:
+        score +=1 # 1 point for every hit you make
         m = Mob()
         all_sprites.add(m)
         mobs.add(m)
@@ -184,6 +197,8 @@ while running:
     #blit means copy the pixels of one thing on to another
     screen.blit(background,background_rect)
     all_sprites.draw(screen)
+    #draw the score here
+    draw_text(screen,str(score),40,WIDTH/2,20)
     #always do this after drawing everything
     pg.display.flip()
 #terminate the game window and close everything

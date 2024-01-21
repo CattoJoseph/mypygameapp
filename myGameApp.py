@@ -4,6 +4,7 @@ import random
 
 from os import path
 img_dir = path.join(path.dirname(__file__),'img') #img is the folder where the graphics are
+snd_dir = path.join(path.dirname(__file__),'snd') #snd is the folder where the sounds are
 #load all game graphics
 #convert() methods will draw the image in memory before it is displayed which is
 # much faster than drawing it in real time i.e. pixel by pixel  
@@ -64,6 +65,8 @@ class Player(pg.sprite.Sprite):
         all_sprites.add(bullet)
         #add bullet to the bullets sprite group
         bullets.add(bullet)
+        #play a sound
+        shoot_sound.play()
 class Mob(pg.sprite.Sprite):
     #enemy mobile object which inherits from the sprite
     def __init__(self):
@@ -122,6 +125,17 @@ mob_img = pg.image.load(path.join(img_dir, "MrNimbusEnemy.png")).convert()
 player_img = pg.image.load(path.join(img_dir, "Rick2 player.jpg")).convert()
 bullet_img = pg.image.load(path.join(img_dir, "Morty bullet.jpg")).convert()
 
+#Load sound files
+shoot_sound = pg.mixer.Sound(path.join(snd_dir,'mortyHello.mp3'))
+#Load sxplosion sounds
+expl_sounds = []
+for snd in ['Nimbus.mp3', 'Nimbus.mp3']:
+    expl_sounds.append(pg.mixer.Sound(path.join(snd_dir,snd)))
+
+#Load background sound
+pg.mixer.music.load(path.join(snd_dir,'RMbgaudio.mp3'))
+pg.mixer.music.set_volume(0.4)
+
 class Bullet(pg.sprite.Sprite):
     def __init__(self,x,y):
         # x and y are respawn positions based on the player's position
@@ -156,6 +170,11 @@ for i in range(8):
     
 all_sprites.add(player)
 score = 0
+#play background audio
+#parameters could include - play list, looping
+#loops=-1 - tells pygame to look each time audio gets to the end
+pg.mixer.music.play(loops=-1)
+
 #Game loop
 #You need a while loop and a way to stop it - the variable "running" is used here
 running = True
@@ -182,6 +201,7 @@ while running:
     hits = pg.sprite.groupcollide(mobs,bullets,True,True)
     for hit in hits:
         score +=1 # 1 point for every hit you make
+        random.choice(expl_sounds).play()
         m = Mob()
         all_sprites.add(m)
         mobs.add(m)

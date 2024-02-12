@@ -267,16 +267,9 @@ while running:
     #always do this after drawing everything
     pg.display.flip()
 print(conn)
-'''
-Username = input("Enter username: ")
-if checkExists() == 1:
-    conn.commit()
-else:
-    print("This person is not in the database")
-'''
+
 
 #terminate the game window and close everything
 pg.quit
-name=input('Enter your name: ')
-id = int(input('Enter your ID: '))
-writeNewRecord(name, id, score)
+playerName=input('Enter your name: ')
+WriteToSpecific(playerName,score)
